@@ -8,9 +8,21 @@ import {
   Settings,
   LogOut,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { signOut } from "../utils/auth";
 
 export default function Sidebar() {
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      navigate("/login");
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
   const menuItems = [
     { icon: Home, label: "Home", active: false },
     { icon: Compass, label: "Discover", active: false },
@@ -49,7 +61,7 @@ export default function Sidebar() {
       </nav>
 
       <div className="p-4 border-t border-gray-200">
-        <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer">
+        <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50">
           <Avatar>
             <AvatarImage src="https://github.com/shadcn.png" />
             <AvatarFallback>FA</AvatarFallback>
@@ -60,7 +72,13 @@ export default function Sidebar() {
               anthony@example.com
             </p>
           </div>
-          <LogOut size={16} className="text-gray-400 hover:text-red-500" />
+          <button
+            onClick={handleLogout}
+            className="p-1 hover:bg-gray-100 rounded transition-colors"
+            aria-label="Logout"
+          >
+            <LogOut size={16} className="text-gray-400 hover:text-red-500" />
+          </button>
         </div>
       </div>
     </aside>
