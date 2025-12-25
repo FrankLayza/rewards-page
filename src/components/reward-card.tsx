@@ -1,5 +1,5 @@
-import { Star, CreditCard, Wallet, Gift } from "lucide-react";
-import { ReactNode } from "react";
+import { Star, } from "lucide-react";
+import type { ReactNode } from "react";
 
 interface RewardCardProps {
   icon: ReactNode;
@@ -32,7 +32,7 @@ export default function RewardCard({
       <h3 className="text-lg font-bold text-gray-900 mb-2 text-center">{title}</h3>
 
       {/* Description */}
-      <p className="text-sm text-gray-600 mb-4 flex-grow text-center">{description}</p>
+      <p className="text-sm text-gray-600 mb-4 grow text-center">{description}</p>
 
       {/* Cost */}
       <div className="flex items-center justify-center gap-2 mb-4">

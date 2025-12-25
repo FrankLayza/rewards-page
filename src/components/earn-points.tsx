@@ -14,6 +14,7 @@ import {
   Copy,
 } from "lucide-react";
 import { useState } from "react";
+import { useRewardData } from "@/hooks/useRewardsData";
 
 export default function EarnRewardsView() {
   // Mock data for UI development (We will replace this with Supabase data later)
@@ -23,7 +24,7 @@ export default function EarnRewardsView() {
     streak: 1,
     claimedToday: true,
   };
-
+  const {points} = useRewardData()
   const [referralLink] = useState("https://flowvahub.com/ref/abc123");
   const [copied, setCopied] = useState(false);
 
@@ -62,7 +63,7 @@ export default function EarnRewardsView() {
 
             <div className="flex items-center justify-between mb-2 p-6">
               <span className="text-4xl font-bold text-purple-600">
-                {userData.points}
+                {points}
               </span>
               <div className="w-10 h-10 rounded-full bg-yellow-400 flex items-center justify-center shadow-sm">
                 <span className="text-yellow-100 text-xl">★</span>{" "}
@@ -74,7 +75,7 @@ export default function EarnRewardsView() {
               <div className="flex justify-between text-xs text-gray-500 mb-2">
                 <span>Progress to $5 Gift Card</span>
                 <span>
-                  {userData.points}/{userData.goal}
+                  {points}/{userData.goal}
                 </span>
               </div>
               {/* Progress Bar Container */}
