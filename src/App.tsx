@@ -12,9 +12,11 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
 
+        {/* Root redirect to login */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
+
         {/* Protected Routes wrapped in Layout */}
         <Route element={<Layout />}>
-          <Route path="/" element={<Navigate to="/rewards" replace />} />
           <Route path="/rewards" element={<Rewards />} />
         </Route>
       </Routes>

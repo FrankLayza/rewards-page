@@ -8,6 +8,8 @@ import {
   Users,
   Copy,
   CheckIcon,
+  X,
+  Layers,
 } from "lucide-react";
 import { FaFacebook, FaLinkedinIn, FaWhatsapp } from "react-icons/fa";
 import { LiaStarSolid } from "react-icons/lia";
@@ -28,6 +30,7 @@ export default function EarnRewardsView() {
   const { points, claimedToday, streak, weeklyClaims } = useRewardsData();
   const [referralLink] = useState("https://flowvahub.com/ref/abc123");
   const [copied, setCopied] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
   const [isClaimed, setClaiming] = useState(false);
 
   const handleCopy = async () => {
@@ -96,7 +99,6 @@ export default function EarnRewardsView() {
               <div className="w-10 h-10 rounded-full bg-yellow-400 flex items-center justify-center shadow-sm">
                 <LiaStarSolid className="size-6 text-[#ff8800]" />
               </div>
-              
             </div>
 
             <div className="mt-auto p-6">
@@ -283,7 +285,10 @@ export default function EarnRewardsView() {
               <p className="my-3 font-semibold text-sm py-2">
                 Share your tool stack
               </p>
-              <button className="group flex items-center gap-2 rounded-full bg-[#eef2ff] px-3 py-1.5 cursor-pointer transition-colors hover:bg-purple-600">
+              <button
+                onClick={() => setShowShareModal(true)}
+                className="group flex items-center gap-2 rounded-full bg-[#eef2ff] px-3 py-1.5 cursor-pointer transition-colors hover:bg-purple-600"
+              >
                 <Share2 className="text-[#9013fe] transition-colors group-hover:text-white" />
                 <p className="text-[#9013fe] font-semibold text-sm transition-colors group-hover:text-white">
                   Share
@@ -364,6 +369,40 @@ export default function EarnRewardsView() {
           </div>
         </div>
       </div>
+
+      {/* Share Your Stack Modal */}
+      {showShareModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6 relative">
+            {/* Close Button */}
+            <button
+              onClick={() => setShowShareModal(false)}
+              className="absolute top-4 right-4 p-1 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
+              aria-label="Close modal"
+            >
+              <X size={20} className="text-gray-500" />
+            </button>
+
+            {/* Modal Content */}
+            <div className="flex flex-col items-center text-center">
+              {/* Title */}
+              <h2 className="text-xl font-bold text-gray-900 mb-6">
+                Share Your Stack
+              </h2>
+
+              {/* Icon */}
+              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-4">
+                <Layers className="w-8 h-8 text-purple-600" />
+              </div>
+
+              {/* Message */}
+              <p className="text-gray-600 text-sm mb-6">
+                You have no stack created yet, go to Tech Stack to create one.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
