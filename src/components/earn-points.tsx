@@ -16,26 +16,31 @@ import { LiaStarSolid } from "react-icons/lia";
 import { HiUserAdd } from "react-icons/hi";
 import { FaXTwitter, FaGift } from "react-icons/fa6";
 import { useState } from "react";
-import { useRewardsData } from "@/hooks/useRewardsData";
+import { useRewardsData } from "@/contexts/RewardsContext";
 import supabase from "@/utils/supbaseClient";
 
 export default function EarnRewardsView() {
-  // Mock data for UI development (We will replace this with Supabase data later)
-  const userData = {
-    points: 5,
-    goal: 5000,
-    streak: 1,
-    claimedToday: true,
-  };
-  const { points, claimedToday, streak, weeklyClaims } = useRewardsData();
-  const [referralLink] = useState("https://flowvahub.com/ref/abc123");
+  const {
+    points,
+    claimedToday,
+    streak,
+    weeklyClaims,
+    referralCode,
+    referralsStats,
+    refresh,
+  } = useRewardsData();
   const [copied, setCopied] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [isClaimed, setClaiming] = useState(false);
 
+  const realReferralLink =
+    typeof window !== "undefined"
+      ? `${window.location.origin}/signup?ref=${referralCode || "..."}`
+      : "";
+
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(referralLink);
+      await navigator.clipboard.writeText(realReferralLink);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -58,7 +63,7 @@ export default function EarnRewardsView() {
       if (error) throw error;
 
       if (data.success) {
-        window.location.reload();
+        await refresh();
       } else {
         alert(data.message);
       }
@@ -105,7 +110,7 @@ export default function EarnRewardsView() {
               <div className="flex justify-between text-xs text-gray-500 mb-2">
                 <span>Progress to $5 Gift Card</span>
                 <span className="font-semibold">
-                  {points}/{userData.goal}
+                  {points}/{`5000`}
                 </span>
               </div>
               {/* Progress Bar Container */}
@@ -113,7 +118,7 @@ export default function EarnRewardsView() {
                 <div
                   className="bg-purple-600 h-2 rounded-full transition-all duration-500"
                   style={{
-                    width: `${(userData.points / userData.goal) * 100}%`,
+                    width: `${(points / 5000) * 100}%`,
                   }}
                 ></div>
               </div>
@@ -134,7 +139,7 @@ export default function EarnRewardsView() {
               <span className="text-4xl font-bold text-purple-600">
                 {streak} day{streak !== 1 ? "s" : ""}
               </span>
-              {userData.streak > 3 && (
+              {streak > 3 && (
                 <Flame className="text-orange-500 mb-1" fill="currentColor" />
               )}
             </div>
@@ -318,11 +323,15 @@ export default function EarnRewardsView() {
           <div className="p-4">
             <div className="flex justify-evenly items-center">
               <div className="text-center">
-                <p className="font-semibold text-purple-400 text-3xl">0</p>
+                <p className="font-semibold text-purple-400 text-3xl">
+                  {referralsStats?.count}
+                </p>
                 <p className="text-sm">Referrals</p>
               </div>
               <div className="text-center">
-                <p className="font-semibold text-purple-400 text-3xl">0</p>
+                <p className="font-semibold text-purple-400 text-3xl">
+                  {referralsStats?.earnings}
+                </p>
                 <p className="text-sm">Points Earned</p>
               </div>
             </div>
@@ -334,7 +343,7 @@ export default function EarnRewardsView() {
               <div className="relative mt-3">
                 <input
                   type="text"
-                  value={referralLink}
+                  value={referralCode ? realReferralLink : "Loading..."}
                   readOnly
                   className="border border-gray-300 w-full bg-white rounded-md p-2 pr-10"
                 />
