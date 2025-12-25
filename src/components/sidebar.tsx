@@ -19,7 +19,7 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ isMobileOpen, setMobileOpen }: SidebarProps) {
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -30,6 +30,17 @@ export default function Sidebar({ isMobileOpen, setMobileOpen }: SidebarProps) {
       console.error("Error signing out:", error);
     }
   };
+
+  const getInitials = (name: string) => {
+    return name
+      ? name
+          .split(" ")
+          .map((n) => n[0])
+          .join("")
+          .toUpperCase()
+          .slice(0, 2)
+      : "JD";
+  }
   const menuItems = [
     { icon: Home, label: "Home", active: false },
     { icon: Compass, label: "Discover", active: false },
@@ -93,14 +104,14 @@ export default function Sidebar({ isMobileOpen, setMobileOpen }: SidebarProps) {
           <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50">
             <Avatar>
               <AvatarImage src="https://github.com/shadcn.png" />
-              <AvatarFallback>FA</AvatarFallback>
+              <AvatarFallback>{getInitials(user?.email || "")}</AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-gray-900 truncate">
-                Frank
+                {user?.user_metadata.full_name}
               </p>
               <p className="text-xs text-gray-500 truncate">
-                anthony@example.com
+                {user?.email}
               </p>
             </div>
             <button
