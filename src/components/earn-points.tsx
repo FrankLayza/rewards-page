@@ -10,6 +10,7 @@ import {
   CheckIcon,
   X,
   Layers,
+  Upload,
 } from "lucide-react";
 import { FaFacebook, FaLinkedinIn, FaWhatsapp } from "react-icons/fa";
 import { LiaStarSolid } from "react-icons/lia";
@@ -32,6 +33,10 @@ export default function EarnRewardsView() {
   const [copied, setCopied] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [isClaimed, setClaiming] = useState(false);
+  const [showClaimModal, setShowClaimModal] = useState(false);
+  const [claimEmail, setClaimEmail] = useState("");
+  const [claimFile, setClaimFile] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const realReferralLink =
     typeof window !== "undefined"
@@ -46,6 +51,31 @@ export default function EarnRewardsView() {
     } catch (err) {
       console.error("Failed to copy:", err);
     }
+  };
+
+  const shareText =
+    "Join Flowva and start earning rewards! Use my referral link:";
+  const encodedLink = encodeURIComponent(realReferralLink);
+  const encodedText = encodeURIComponent(`${shareText} ${realReferralLink}`);
+
+  const handleShareFacebook = () => {
+    const url = `https://www.facebook.com/sharer/sharer.php?u=${encodedLink}`;
+    window.open(url, "_blank", "width=600,height=400");
+  };
+
+  const handleShareTwitter = () => {
+    const url = `https://twitter.com/intent/tweet?text=${encodedText}`;
+    window.open(url, "_blank", "width=600,height=400");
+  };
+
+  const handleShareLinkedIn = () => {
+    const url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedLink}`;
+    window.open(url, "_blank", "width=600,height=400");
+  };
+
+  const handleShareWhatsApp = () => {
+    const url = `https://wa.me/?text=${encodedText}`;
+    window.open(url, "_blank");
   };
 
   const handleClaim = async () => {
@@ -242,7 +272,10 @@ export default function EarnRewardsView() {
                   </span>
                 </button>
               </a>
-              <button className="flex items-center gap-2 bg-linear-to-r from-[#a124ec] to-[#ea709d] rounded-full px-2.5 py-2 cursor-pointer">
+              <button
+                onClick={() => setShowClaimModal(true)}
+                className="flex items-center gap-2 bg-linear-to-r from-[#a124ec] to-[#ea709d] rounded-full px-2.5 py-2 cursor-pointer"
+              >
                 <FaGift className="text-white" />
                 <span className="text-white text-sm font-semibold">
                   Claim 50 pts
@@ -363,16 +396,34 @@ export default function EarnRewardsView() {
 
             <div className="flex justify-center items-center">
               <div className="flex items-center gap-4">
-                <FaFacebook className="text-blue-500 size-8 outline-none border-none cursor-pointer transform transition-transform duration-300 ease-out hover:-translate-y-2" />
-                <div className="rounded-full bg-black p-1.5 cursor-pointer transform transition-transform duration-300 ease-out hover:-translate-y-2">
+                <button
+                  onClick={handleShareFacebook}
+                  className="outline-none border-none cursor-pointer transform transition-transform duration-300 ease-out hover:-translate-y-2"
+                  aria-label="Share on Facebook"
+                >
+                  <FaFacebook className="text-blue-500 size-8" />
+                </button>
+                <button
+                  onClick={handleShareTwitter}
+                  className="rounded-full bg-black p-1.5 cursor-pointer transform transition-transform duration-300 ease-out hover:-translate-y-2 outline-none border-none"
+                  aria-label="Share on Twitter"
+                >
                   <FaXTwitter className="size-5 text-white" />
-                </div>
-                <div className="rounded-full bg-blue-500 p-1.5 cursor-pointer transform transition-transform duration-300 ease-out hover:-translate-y-2">
+                </button>
+                <button
+                  onClick={handleShareLinkedIn}
+                  className="rounded-full bg-blue-500 p-1.5 cursor-pointer transform transition-transform duration-300 ease-out hover:-translate-y-2 outline-none border-none"
+                  aria-label="Share on LinkedIn"
+                >
                   <FaLinkedinIn className="size-5 text-white" />
-                </div>
-                <div className="rounded-full bg-green-400 p-1.5 cursor-pointer transform transition-transform duration-300 ease-out hover:-translate-y-2">
+                </button>
+                <button
+                  onClick={handleShareWhatsApp}
+                  className="rounded-full bg-green-400 p-1.5 cursor-pointer transform transition-transform duration-300 ease-out hover:-translate-y-2 outline-none border-none"
+                  aria-label="Share on WhatsApp"
+                >
                   <FaWhatsapp className="size-5 text-white" />
-                </div>
+                </button>
               </div>
             </div>
           </div>
@@ -408,6 +459,146 @@ export default function EarnRewardsView() {
               <p className="text-gray-600 text-sm mb-6">
                 You have no stack created yet, go to Tech Stack to create one.
               </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Claim 50 Points Modal */}
+      {showClaimModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full p-5 relative">
+            {/* Close Button */}
+            <button
+              onClick={() => {
+                setShowClaimModal(false);
+                setClaimEmail("");
+                setClaimFile(null);
+              }}
+              className="absolute top-4 right-4 p-1 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
+              aria-label="Close modal"
+            >
+              <X size={20} className="text-gray-500" />
+            </button>
+
+            {/* Modal Content */}
+            <div className="mt-1">
+              {/* Title */}
+              <h2 className="text-xl font-bold text-gray-900 mb-3">
+                Claim Your 50 Points
+              </h2>
+
+              {/* Instructions */}
+              <div className="mb-4">
+                <p className="text-sm text-gray-700 mb-3">
+                  Sign up for Reclaim (free, no payment needed), then fill the
+                  form below:
+                </p>
+                <ol className="list-decimal list-inside space-y-1 text-sm text-gray-700">
+                  <li>Enter your Reclaim sign-up email.</li>
+                  <li>
+                    Upload a screenshot of your Reclaim profile showing your
+                    email.
+                  </li>
+                </ol>
+                <p className="text-sm text-gray-700 mt-3">
+                  After verification, you'll get 50 Flowva Points! 🎉😊
+                </p>
+              </div>
+
+              {/* Form */}
+              <div className="space-y-3">
+                {/* Email Input */}
+                <div>
+                  <label
+                    htmlFor="claim-email"
+                    className="block text-xs font-medium text-gray-700 mb-1.5"
+                  >
+                    Email used on Reclaim
+                  </label>
+                  <input
+                    id="claim-email"
+                    type="email"
+                    value={claimEmail}
+                    onChange={(e) => setClaimEmail(e.target.value)}
+                    placeholder="user@example.com"
+                    className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  />
+                </div>
+
+                {/* File Upload */}
+                <div>
+                  <label
+                    htmlFor="claim-screenshot"
+                    className="block text-xs font-medium text-gray-700 mb-1.5"
+                  >
+                    Upload screenshot (mandatory)
+                  </label>
+                  <label
+                    htmlFor="claim-screenshot"
+                    className="flex flex-row items-center justify-center w-full h-12 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors px-4"
+                  >
+                    <Upload className="w-5 h-5 mr-2 text-gray-400" />
+                    <p className="text-xs text-gray-500">
+                      {claimFile ? claimFile.name : "Choose file"}
+                    </p>
+                    <input
+                      id="claim-screenshot"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setClaimFile(file);
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex justify-end gap-3 mt-4">
+                <button
+                  onClick={() => {
+                    setShowClaimModal(false);
+                    setClaimEmail("");
+                    setClaimFile(null);
+                  }}
+                  className="px-4 py-1.5 text-sm text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={async () => {
+                    if (!claimEmail || !claimFile) {
+                      alert("Please fill in all fields");
+                      return;
+                    }
+                    setIsSubmitting(true);
+                    try {
+                      // TODO: Implement actual submission logic with Supabase
+                      // For now, just show success message
+                      alert(
+                        "Claim submitted! Your points will be added after verification."
+                      );
+                      setShowClaimModal(false);
+                      setClaimEmail("");
+                      setClaimFile(null);
+                    } catch (error) {
+                      console.error("Error submitting claim:", error);
+                      alert("Failed to submit claim. Please try again.");
+                    } finally {
+                      setIsSubmitting(false);
+                    }
+                  }}
+                  disabled={isSubmitting}
+                  className="px-4 py-1.5 text-sm text-white bg-purple-600 rounded-md hover:bg-purple-700 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isSubmitting ? "Submitting..." : "Submit Claim"}
+                </button>
+              </div>
             </div>
           </div>
         </div>
