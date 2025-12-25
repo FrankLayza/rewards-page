@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import supabase from "../utils/supbaseClient";
+import { useAuth } from "./AuthContext";
 
 interface Transaction {
   id: string;
@@ -34,6 +35,7 @@ const RewardsContext = createContext<RewardsContextType | undefined>(undefined);
 
 // 2. The Provider Component (Holds the State)
 export function RewardsProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
   const [points, setPoints] = useState(0);
   const [streak, setStreak] = useState(0);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -58,12 +60,22 @@ export function RewardsProvider({ children }: { children: ReactNode }) {
 
   const fetchData = useCallback(async () => {
     try {
-      if (points === 0) setLoading(true);
+      setLoading(true);
+      setError(null);
 
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return;
+      // Use user from AuthContext instead of fetching again
+      if (!user) {
+        setLoading(false);
+        // Reset state when no user
+        setPoints(0);
+        setStreak(0);
+        setTransactions([]);
+        setClaimedToday(false);
+        setWeeklyClaims([]);
+        setReferralCode(null);
+        setReferralsStats({ count: 0, earnings: 0 });
+        return;
+      }
 
       const startOfWeekISO = getStartOfWeek().toISOString();
 
@@ -125,11 +137,24 @@ export function RewardsProvider({ children }: { children: ReactNode }) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    // Only fetch if user is available
+    if (user) {
+      fetchData();
+    } else {
+      // Reset state when user logs out
+      setLoading(false);
+      setPoints(0);
+      setStreak(0);
+      setTransactions([]);
+      setClaimedToday(false);
+      setWeeklyClaims([]);
+      setReferralCode(null);
+      setReferralsStats({ count: 0, earnings: 0 });
+    }
+  }, [user, fetchData]);
 
   // Memoize context value to prevent unnecessary re-renders
   const contextValue = useMemo(
