@@ -6,14 +6,13 @@ import {
   Star,
   Share2,
   Users,
-  Facebook,
-  Twitter,
-  Linkedin,
-  Gift,
-  UserPlus2,
   Copy,
   CheckIcon,
 } from "lucide-react";
+import { FaFacebook, FaLinkedinIn, FaWhatsapp } from "react-icons/fa";
+import { LiaStarSolid } from "react-icons/lia";
+import { HiUserAdd } from "react-icons/hi";
+import { FaXTwitter, FaGift } from "react-icons/fa6";
 import { useState } from "react";
 import { useRewardsData } from "@/hooks/useRewardsData";
 import supabase from "@/utils/supbaseClient";
@@ -95,15 +94,15 @@ export default function EarnRewardsView() {
                 {points}
               </span>
               <div className="w-10 h-10 rounded-full bg-yellow-400 flex items-center justify-center shadow-sm">
-                <span className="text-yellow-100 text-xl">★</span>{" "}
-                {/* Simple Star Icon */}
+                <LiaStarSolid className="size-6 text-[#ff8800]" />
               </div>
+              
             </div>
 
             <div className="mt-auto p-6">
               <div className="flex justify-between text-xs text-gray-500 mb-2">
                 <span>Progress to $5 Gift Card</span>
-                <span>
+                <span className="font-semibold">
                   {points}/{userData.goal}
                 </span>
               </div>
@@ -224,20 +223,20 @@ export default function EarnRewardsView() {
               </div>
             </div>
 
-            <div className="flex justify-between p-4">
+            <div className="flex justify-between p-4 border-gray-200 border-t">
               <a
                 href="https://reclaim.ai/?pscd=go.reclaim.ai&ps_partner_key=MTZlZThkOWRhMTI4&ps_xid=ziN5XjFJJ8niE4&gsxid=ziN5XjFJJ8niE4&gspk=MTZlZThkOWRhMTI4"
                 target="_blank"
               >
-                <button className="flex items-center gap-2 bg-purple-600 rounded-full px-3 py-1.5 cursor-pointer">
-                  <UserPlus2 className="text-white" />
+                <button className="flex items-center gap-2 bg-purple-600 rounded-full px-3 py-2 cursor-pointer">
+                  <HiUserAdd className="text-white size-5" />
                   <span className="text-white text-sm font-semibold">
                     Sign up
                   </span>
                 </button>
               </a>
-              <button className="flex items-center gap-2 bg-linear-to-r from-[#a124ec] to-[#ea709d] rounded-full px-1.5 py-1.5">
-                <Gift className="text-white" />
+              <button className="flex items-center gap-2 bg-linear-to-r from-[#a124ec] to-[#ea709d] rounded-full px-2.5 py-2 cursor-pointer">
+                <FaGift className="text-white" />
                 <span className="text-white text-sm font-semibold">
                   Claim 50 pts
                 </span>
@@ -301,7 +300,7 @@ export default function EarnRewardsView() {
           <div className="w-1 h-6 bg-purple-600 rounded-full"></div>
           <h2 className="text-xl font-bold text-gray-900">Refer & Earn</h2>
         </div>
-        <div className="bg-white">
+        <div className="bg-white rounded-t-2xl">
           <div className="flex items-center gap-3 bg-[#eef2ff] p-4 rounded-t-2xl">
             <Users className="text-purple-500" />
             <div className="">
@@ -350,11 +349,16 @@ export default function EarnRewardsView() {
 
             <div className="flex justify-center items-center">
               <div className="flex items-center gap-4">
-                <div className="bg-blue-500 w-8 h-8 flex justify-center items-center rounded-full">
-                  <Facebook className="text-white outline-none border-none" />
+                <FaFacebook className="text-blue-500 size-8 outline-none border-none cursor-pointer transform transition-transform duration-300 ease-out hover:-translate-y-2" />
+                <div className="rounded-full bg-black p-1.5 cursor-pointer transform transition-transform duration-300 ease-out hover:-translate-y-2">
+                  <FaXTwitter className="size-5 text-white" />
                 </div>
-                <Twitter />
-                <Linkedin />
+                <div className="rounded-full bg-blue-500 p-1.5 cursor-pointer transform transition-transform duration-300 ease-out hover:-translate-y-2">
+                  <FaLinkedinIn className="size-5 text-white" />
+                </div>
+                <div className="rounded-full bg-green-400 p-1.5 cursor-pointer transform transition-transform duration-300 ease-out hover:-translate-y-2">
+                  <FaWhatsapp className="size-5 text-white" />
+                </div>
               </div>
             </div>
           </div>

@@ -9,7 +9,7 @@ export default function Rewards() {
     <>
       <div>
         <div className="sticky top-0 bg-[#f9fafb] backdrop-blur-sm z-10 pb-4 pt-6 px-6 border-b border-gray-200">
-          <div className="flex items-start justify-between">
+          <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold mb-4">Rewards Hub</h1>
               <p className="text-gray-600">
