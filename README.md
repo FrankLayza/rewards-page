@@ -4,13 +4,15 @@ A modern rewards and points management application built with React, TypeScript,
 
 ## Features
 
-- 🎯 Earn points through daily check-ins and referrals
-- 🎁 Redeem rewards with accumulated points
-- 📊 Track your points balance and progress
-- 🔥 Daily streak tracking
-- 👥 Referral system with social sharing
-- 📱 Fully responsive design
-- 🔔 Notification system
+- 🎯 **Earn Points** - Daily check-ins, referrals, and featured tool claims
+- 🎁 **Redeem Rewards** - Exchange points for gift cards, transfers, and more
+- 📊 **Points Tracking** - Real-time balance with progress visualization
+- 🔥 **Daily Streak** - Track consecutive days and weekly claim history
+- 👥 **Referral System** - Share referral links via social media
+- 📱 **Fully Responsive** - Optimized for mobile, tablet, and desktop
+- 🔔 **Notifications** - Notification dropdown system
+- ⚡ **Performance Optimized** - React.memo, lazy loading, and code splitting
+- 🎨 **Modern UI** - Clean, intuitive interface with Tailwind CSS
 
 ## Prerequisites
 
@@ -117,21 +119,52 @@ npm run preview
 ```
 rewards-page/
 ├── src/
-│   ├── components/          # React components
-│   │   ├── earn-points.tsx # Points earning interface
-│   │   ├── redeem-rewards.tsx # Rewards redemption
-│   │   ├── rewards-hub.tsx # Main rewards hub
-│   │   ├── sidebar.tsx     # Navigation sidebar
-│   │   └── ui/              # UI components
-│   ├── contexts/            # React contexts
-│   │   ├── AuthContext.tsx # Authentication context
-│   │   └── RewardsContext.tsx # Rewards data context
-│   ├── utils/               # Utility functions
-│   │   ├── auth.ts         # Authentication utilities
-│   │   └── supbaseClient.ts # Supabase client
-│   └── main.tsx            # Application entry point
-├── .env.local               # Environment variables (not in git)
-└── package.json            # Dependencies and scripts
+│   ├── components/            # React components
+│   │   ├── earn-points/    # Earn points feature components
+│   │   │   ├── ClaimPointsModal.tsx      # Modal for claiming points
+│   │   │   ├── DailyStreakCard.tsx       # Daily streak tracking card
+│   │   │   ├── EarnMorePointsSection.tsx # Additional earning opportunities
+│   │   │   ├── EarnPointsError.tsx       # Error state component
+│   │   │   ├── EarnPointsSkeleton.tsx    # Loading skeleton
+│   │   │   ├── FeaturedSpotlightCard.tsx # Featured tool spotlight
+│   │   │   ├── PointsBalanceCard.tsx     # Points balance display
+│   │   │   ├── ReferAndEarnSection.tsx    # Referral system
+│   │   │   └── ShareStackModal.tsx       # Share stack modal
+│   │   ├── earn-points.tsx               # Main earn points view
+│   │   ├── redeem-rewards.tsx            # Rewards redemption view
+│   │   ├── rewards-hub.tsx               # Main rewards hub (tabs)
+│   │   ├── reward-card.tsx               # Individual reward card
+│   │   ├── sidebar.tsx                   # Navigation sidebar
+│   │   ├── layout.tsx                    # Main layout wrapper
+│   │   ├── Login.tsx                     # Login page
+│   │   ├── SignUp.tsx                    # Sign up page
+│   │   └── ui/                           # Reusable UI components
+│   │       └── avatar.tsx                # Avatar component
+│   ├── contexts/                          # React contexts
+│   │   ├── AuthContext.tsx                # Authentication context
+│   │   └── RewardsContext.tsx            # Rewards data context
+│   ├── utils/                             # Utility functions
+│   │   ├── auth.ts                       # Authentication utilities
+│   │   └── supbaseClient.ts              # Supabase client
+│   ├── lib/                               # Library utilities
+│   │   └── utils.ts                      # General utilities (cn, etc.)
+│   ├── types/                             # TypeScript type definitions
+│   ├── assets/                            # Static assets
+│   │   └── react.svg                     # React logo
+│   ├── App.tsx                            # Main app component (routing)
+│   ├── main.tsx                           # Application entry point
+│   └── index.css                          # Global styles
+├── supabase/                              # Supabase configuration
+├── public/                                # Public assets
+│   └── vite.svg                          # Vite logo
+├── .env.local                             # Environment variables (not in git)
+├── components.json                        # shadcn/ui configuration
+├── package.json                           # Dependencies and scripts
+├── tsconfig.json                          # TypeScript configuration
+├── tsconfig.app.json                      # App-specific TS config
+├── tsconfig.node.json                     # Node-specific TS config
+├── vite.config.ts                         # Vite configuration
+└── eslint.config.js                       # ESLint configuration
 ```
 
 ## Available Scripts
@@ -143,14 +176,24 @@ rewards-page/
 
 ## Technologies Used
 
-- **React 19** - UI library
-- **TypeScript** - Type safety
-- **Vite** - Build tool and dev server
-- **Tailwind CSS** - Styling
-- **Supabase** - Backend and authentication
-- **React Router** - Routing
-- **Lucide React** - Icons
-- **React Icons** - Additional icons
+- **React 19** - UI library with hooks and context API
+- **TypeScript** - Type safety and better developer experience
+- **Vite** - Fast build tool and dev server
+- **Tailwind CSS** - Utility-first CSS framework
+- **Supabase** - Backend, authentication, and database
+- **React Router** - Client-side routing
+- **Lucide React** - Beautiful icon library
+- **React Icons** - Additional icon sets (Font Awesome, etc.)
+- **shadcn/ui** - Reusable component primitives
+
+## Architecture Highlights
+
+- **Component-Based Architecture** - Modular, reusable components
+- **Context API** - Global state management for auth and rewards
+- **Performance Optimized** - React.memo, useMemo, useCallback, lazy loading
+- **Type-Safe** - Full TypeScript coverage
+- **Responsive Design** - Mobile-first approach with Tailwind breakpoints
+- **Code Splitting** - Lazy-loaded routes for optimal bundle size
 
 ## Troubleshooting
 
