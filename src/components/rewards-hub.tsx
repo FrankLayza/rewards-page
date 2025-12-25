@@ -27,7 +27,7 @@ export default function Rewards() {
           <div className="flex">
             <button
               onClick={() => setActiveTab("earn")}
-              className={`relative py-3 px-3 text-sm font-medium tracking-wide mr-6 cursor-pointer transition-all duration-300 ${
+              className={`relative py-3 px-3 text-lg font-medium tracking-wide mr-6 cursor-pointer transition-all duration-300 ${
                 activeTab === "earn"
                   ? "text-purple-600 rounded-t-md bg-purple-200"
                   : "text-gray-500 hover:text-gray-700 hover:bg-purple-200 rounded-t-md"
@@ -42,7 +42,7 @@ export default function Rewards() {
             </button>
             <button
               onClick={() => setActiveTab("redeem")}
-              className={`relative py-3 px-3 text-sm font-medium tracking-wide cursor-pointer transition-all duration-300 ${
+              className={`relative py-3 px-3 text-lg font-medium tracking-wide cursor-pointer transition-all duration-300 ${
                 activeTab === "redeem"
                   ? "text-purple-600 rounded-t-md bg-purple-200"
                   : "text-gray-500 hover:text-gray-700 hover:bg-purple-200 rounded-t-md"

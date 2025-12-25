@@ -12,9 +12,11 @@ import {
   Gift,
   UserPlus2,
   Copy,
+  CheckIcon,
 } from "lucide-react";
 import { useState } from "react";
-import { useRewardData } from "@/hooks/useRewardsData";
+import { useRewardsData } from "@/hooks/useRewardsData";
+import supabase from "@/utils/supbaseClient";
 
 export default function EarnRewardsView() {
   // Mock data for UI development (We will replace this with Supabase data later)
@@ -24,9 +26,10 @@ export default function EarnRewardsView() {
     streak: 1,
     claimedToday: true,
   };
-  const {points} = useRewardData()
+  const { points, claimedToday, streak, weeklyClaims } = useRewardsData();
   const [referralLink] = useState("https://flowvahub.com/ref/abc123");
   const [copied, setCopied] = useState(false);
+  const [isClaimed, setClaiming] = useState(false);
 
   const handleCopy = async () => {
     try {
@@ -38,8 +41,34 @@ export default function EarnRewardsView() {
     }
   };
 
+  const handleClaim = async () => {
+    if (claimedToday) return;
+    setClaiming(true);
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase.rpc("claim_daily_bonus", {
+        user_id: user.id,
+      });
+      if (error) throw error;
+
+      if (data.success) {
+        window.location.reload();
+      } else {
+        alert(data.message);
+      }
+    } catch (error) {
+      console.error("Error claiming bonus", error);
+    } finally {
+      setClaiming(false);
+    }
+  };
   const weekDays = ["M", "T", "W", "T", "F", "S", "S"];
-  const currentDayIndex = 6; // Sunday (0-6 scale or 1-7 depending on pref)
+  const today = new Date().getDay();
+  const currentDayIndex = today === 0 ? 6 : today - 1;
 
   return (
     <div className="space-y-8">
@@ -62,7 +91,7 @@ export default function EarnRewardsView() {
             </div>
 
             <div className="flex items-center justify-between mb-2 p-6">
-              <span className="text-4xl font-bold text-purple-600">
+              <span className="text-5xl font-bold text-purple-600">
                 {points}
               </span>
               <div className="w-10 h-10 rounded-full bg-yellow-400 flex items-center justify-center shadow-sm">
@@ -94,15 +123,15 @@ export default function EarnRewardsView() {
           </div>
 
           {/* Card 2: Daily Streak */}
-          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col h-full transform transition-transform duration-300 ease-out hover:-translate-y-2 hover:shadow-lg">
-            <div className="flex items-center gap-2 text-blue-500 font-semibold mb-4">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm flex flex-col h-full transform transition-transform duration-300 ease-out hover:-translate-y-2 hover:shadow-lg">
+            <div className="flex items-center gap-2 text-blue-500 font-semibold mb-4 p-4 bg-[#eef2ff] border-b-0 rounded-t-xl">
               <Calendar size={20} />
-              <span>Daily Streak</span>
+              <span className="text-[#374151]">Daily Streak</span>
             </div>
 
-            <div className="flex items-end gap-2 mb-6">
+            <div className="flex items-end gap-2 mb-6 px-4">
               <span className="text-4xl font-bold text-purple-600">
-                {userData.streak} day
+                {streak} day{streak !== 1 ? "s" : ""}
               </span>
               {userData.streak > 3 && (
                 <Flame className="text-orange-500 mb-1" fill="currentColor" />
@@ -110,47 +139,56 @@ export default function EarnRewardsView() {
             </div>
 
             {/* Week Circles */}
-            <div className="flex justify-between mb-6">
-              {weekDays.map((day, index) => {
-                // Logic: Active if index is today, Completed if index < today
+            <div className="flex justify-between mb-6 px-4">
+              {weekDays.map((dayLabel, index) => {
+                // Is this day found in our DB history?
+                const isClaimedInDB = weeklyClaims.includes(index);
+
+                // Is this strictly today?
                 const isToday = index === currentDayIndex;
-                const isCompleted = index <= currentDayIndex; // Simplified logic for demo
 
                 return (
                   <div key={index} className="flex flex-col items-center gap-2">
                     <div
                       className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium transition-colors
                         ${
+                          // CASE A: It is Today
                           isToday
-                            ? "bg-purple-600 text-white ring-2 ring-purple-200"
-                            : isCompleted
-                            ? "bg-gray-100 text-gray-400"
-                            : "bg-gray-50 text-gray-300"
+                            ? isClaimedInDB
+                              ? "bg-purple-600 text-white" // Today & Claimed
+                              : "bg-white text-purple-600 ring-2 ring-purple-600" // Today & Waiting
+                            : // CASE B: It was claimed in the past
+                            isClaimedInDB
+                            ? "bg-purple-100 text-purple-600 border border-purple-200"
+                            : // CASE C: Default / Missed
+                              "bg-gray-50 text-gray-300"
                         }`}
                     >
-                      {isToday && userData.claimedToday ? (
-                        <Check size={14} />
-                      ) : (
-                        day
-                      )}
+                      {/* Show Check if claimed (today or past), otherwise label */}
+                      {isClaimedInDB ? <Check size={14} /> : dayLabel}
                     </div>
                   </div>
                 );
               })}
             </div>
 
-            <p className="text-gray-500">Check in daily to earn +5 points</p>
+            <p className="text-gray-500 px-4">
+              Check in daily to earn +5 points
+            </p>
 
             <button
-              disabled={userData.claimedToday}
-              className={`w-full py-3 rounded-full font-medium flex items-center justify-center gap-2 transition-colors mt-auto
+              disabled={claimedToday || isClaimed}
+              onClick={handleClaim}
+              className={`mx-4 w-[calc(100%-2rem)] py-3 mb-5 rounded-full font-medium flex items-center justify-center gap-2 transition-colors mt-auto cursor-pointer
                 ${
-                  userData.claimedToday
+                  claimedToday
                     ? "bg-gray-200 text-gray-500 cursor-not-allowed"
                     : "bg-purple-600 text-white hover:bg-purple-700 shadow-md hover:shadow-lg"
                 }`}
             >
-              {userData.claimedToday ? (
+              {isClaimed ? (
+                "Claiming..."
+              ) : claimedToday ? (
                 <>
                   <Flame size={18} /> Claimed Today
                 </>
@@ -187,13 +225,22 @@ export default function EarnRewardsView() {
             </div>
 
             <div className="flex justify-between p-4">
-              <button className="flex items-center gap-2 bg-purple-600 rounded-full px-3 py-1">
-                <UserPlus2 className="text-white" />
-                <span className="text-white">Sign up</span>
-              </button>
-              <button className="flex items-center gap-2 bg-linear-to-r from-[#a124ec] to-[#ea709d] rounded-full px-1.5 py-2">
+              <a
+                href="https://reclaim.ai/?pscd=go.reclaim.ai&ps_partner_key=MTZlZThkOWRhMTI4&ps_xid=ziN5XjFJJ8niE4&gsxid=ziN5XjFJJ8niE4&gspk=MTZlZThkOWRhMTI4"
+                target="_blank"
+              >
+                <button className="flex items-center gap-2 bg-purple-600 rounded-full px-3 py-1.5 cursor-pointer">
+                  <UserPlus2 className="text-white" />
+                  <span className="text-white text-sm font-semibold">
+                    Sign up
+                  </span>
+                </button>
+              </a>
+              <button className="flex items-center gap-2 bg-linear-to-r from-[#a124ec] to-[#ea709d] rounded-full px-1.5 py-1.5">
                 <Gift className="text-white" />
-                <span className="text-white">Claim 50 pts</span>
+                <span className="text-white text-sm font-semibold">
+                  Claim 50 pts
+                </span>
               </button>
             </div>
           </div>
@@ -237,10 +284,12 @@ export default function EarnRewardsView() {
               <p className="my-3 font-semibold text-sm py-2">
                 Share your tool stack
               </p>
-              <div className="flex items-center">
-                <Share2 className="text-[#9013fe]" />
-                <p className="text-[#9013fe]">Share</p>
-              </div>
+              <button className="group flex items-center gap-2 rounded-full bg-[#eef2ff] px-3 py-1.5 cursor-pointer transition-colors hover:bg-purple-600">
+                <Share2 className="text-[#9013fe] transition-colors group-hover:text-white" />
+                <p className="text-[#9013fe] font-semibold text-sm transition-colors group-hover:text-white">
+                  Share
+                </p>
+              </button>
             </div>
           </div>
         </div>
@@ -287,14 +336,14 @@ export default function EarnRewardsView() {
                 />
                 <button
                   onClick={handleCopy}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 hover:bg-gray-100 rounded transition-colors"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 cursor-pointer rounded transition-colors"
                   title={copied ? "Copied!" : "Copy link"}
                 >
-                  <Copy
-                    className={`w-4 h-4 ${
-                      copied ? "text-green-600" : "text-gray-600"
-                    }`}
-                  />
+                  {copied ? (
+                    <CheckIcon className="text-green-500" />
+                  ) : (
+                    <Copy className={`w-6 h-6 ${"text-purple-600"}`} />
+                  )}
                 </button>
               </div>
             </div>

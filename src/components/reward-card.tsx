@@ -29,15 +29,15 @@ export default function RewardCard({
       </div>
 
       {/* Title */}
-      <h3 className="text-lg font-bold text-gray-900 mb-2 text-center">{title}</h3>
+      <h3 className="text-lg font-semibold text-gray-500 mb-2 text-center">{title}</h3>
 
       {/* Description */}
-      <p className="text-sm text-gray-600 mb-4 grow text-center">{description}</p>
+      <p className="text-sm text-gray-500 mb-4 grow text-center">{description}</p>
 
       {/* Cost */}
       <div className="flex items-center justify-center gap-2 mb-4">
         <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
-        <span className="text-purple-600 font-semibold">{points.toLocaleString()} pts</span>
+        <span className="text-purple-600 font-semibold text-sm">{points.toLocaleString()} pts</span>
       </div>
 
       {/* Status Button */}
@@ -46,7 +46,7 @@ export default function RewardCard({
         disabled={isLocked || isComingSoon}
         className={`w-full py-2.5 rounded-lg font-medium transition-colors ${
           isLocked || isComingSoon
-            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+            ? "bg-[#e1e8f1] text-white cursor-not-allowed"
             : "bg-purple-600 text-white hover:bg-purple-700"
         }`}
       >
