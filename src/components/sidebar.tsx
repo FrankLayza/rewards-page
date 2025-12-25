@@ -9,9 +9,8 @@ import {
   LogOut,
   X,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { signOut } from "../utils/auth";
+import { useAuth } from "../contexts/AuthContext";
 
 interface SidebarProps {
   isMobileOpen: boolean;
@@ -19,12 +18,11 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ isMobileOpen, setMobileOpen }: SidebarProps) {
-  const navigate = useNavigate();
+  const { signOut } = useAuth();
 
   const handleLogout = async () => {
     try {
       await signOut();
-      navigate("/login");
     } catch (error) {
       console.error("Error signing out:", error);
     }

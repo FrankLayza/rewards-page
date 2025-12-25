@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { CreditCard, Gift, } from "lucide-react";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { CreditCard, Gift } from "lucide-react";
 import { FaMoneyBill1Wave, FaGift } from "react-icons/fa6";
 import RewardCard from "./reward-card";
 
@@ -20,106 +20,111 @@ export default function RedeemRewardsView() {
 
   // Trigger animation when component mounts
   useEffect(() => {
-    // Small delay to ensure the component is rendered before animation starts
     const timer = setTimeout(() => {
       setIsMounted(true);
     }, 50);
     return () => clearTimeout(timer);
   }, []);
 
+  // Mock data for rewards - memoized to prevent recreation on every render
+  const rewards: Reward[] = useMemo(
+    () => [
+      {
+        id: "1",
+        icon: <FaMoneyBill1Wave className="size-8 text-green-500" />,
+        title: "$5 Bank Transfer",
+        description:
+          "The $5 equivalent will be transferred to your bank account.",
+        points: 5000,
+        status: "locked",
+      },
+      {
+        id: "2",
+        icon: <FaMoneyBill1Wave className="size-8 text-green-500" />,
+        title: "$5 PayPal International",
+        description:
+          "Receive a $5 PayPal balance transfer directly to your PayPal account email.",
+        points: 5000,
+        status: "locked",
+      },
+      {
+        id: "3",
+        icon: <FaGift className="w-8 h-8 text-pink-600" />,
+        title: "$5 Virtual Visa Card",
+        description:
+          "Use your $5 prepaid card to shop anywhere Visa is accepted online.",
+        points: 5000,
+        status: "locked",
+      },
+      {
+        id: "4",
+        icon: <CreditCard className="w-8 h-8 text-blue-600" />,
+        title: "$10 Amazon Gift Card",
+        description: "Redeem for a $10 Amazon gift card code.",
+        points: 10000,
+        status: "locked",
+      },
+      {
+        id: "5",
+        icon: <Gift className="w-8 h-8 text-purple-600" />,
+        title: "$25 Starbucks Gift Card",
+        description: "Get your caffeine fix with a $25 Starbucks gift card.",
+        points: 25000,
+        status: "locked",
+      },
+      {
+        id: "6",
+        icon: <FaMoneyBill1Wave className="w-8 h-8 text-green-600" />,
+        title: "$50 Bank Transfer",
+        description:
+          "The $50 equivalent will be transferred to your bank account.",
+        points: 50000,
+        status: "locked",
+      },
+      {
+        id: "7",
+        icon: <CreditCard className="w-8 h-8 text-indigo-600" />,
+        title: "$100 PayPal Transfer",
+        description: "Receive $100 directly to your PayPal account.",
+        points: 100000,
+        status: "locked",
+      },
+      {
+        id: "8",
+        icon: <Gift className="w-8 h-8 text-pink-600" />,
+        title: "Premium Subscription",
+        description: "Get 3 months of premium features free.",
+        points: 75000,
+        status: "coming-soon",
+      },
+    ],
+    []
+  );
 
+  // Calculate counts for each filter - memoized
+  const filterCounts = useMemo(
+    () => ({
+      all: rewards.length,
+      unlocked: rewards.filter((r) => r.status === "unlocked").length,
+      locked: rewards.filter((r) => r.status === "locked").length,
+      "coming-soon": rewards.filter((r) => r.status === "coming-soon").length,
+    }),
+    [rewards]
+  );
 
+  // Memoize filtered rewards to prevent unnecessary recalculations
+  const filteredRewards = useMemo(
+    () =>
+      activeFilter === "all"
+        ? rewards
+        : rewards.filter((reward: Reward) => reward.status === activeFilter),
+    [activeFilter, rewards]
+  );
 
-  // Mock data for rewards
-  const rewards: Reward[] = [
-    {
-      id: "1",
-      icon: <FaMoneyBill1Wave className="size-8 text-green-500" />,
-      title: "$5 Bank Transfer",
-      description:
-        "The $5 equivalent will be transferred to your bank account.",
-      points: 5000,
-      status: "locked",
-    },
-    {
-      id: "2",
-      icon: <FaMoneyBill1Wave className="size-8 text-green-500" />,
-      title: "$5 PayPal International",
-      description:
-        "Receive a $5 PayPal balance transfer directly to your PayPal account email.",
-      points: 5000,
-      status: "locked",
-    },
-    {
-      id: "3",
-      icon: <FaGift className="w-8 h-8 text-pink-600" />,
-      title: "$5 Virtual Visa Card",
-      description:
-        "Use your $5 prepaid card to shop anywhere Visa is accepted online.",
-      points: 5000,
-      status: "locked",
-    },
-    {
-      id: "4",
-      icon: <CreditCard className="w-8 h-8 text-blue-600" />,
-      title: "$10 Amazon Gift Card",
-      description: "Redeem for a $10 Amazon gift card code.",
-      points: 10000,
-      status: "locked",
-    },
-    {
-      id: "5",
-      icon: <Gift className="w-8 h-8 text-purple-600" />,
-      title: "$25 Starbucks Gift Card",
-      description: "Get your caffeine fix with a $25 Starbucks gift card.",
-      points: 25000,
-      status: "locked",
-    },
-    {
-      id: "6",
-      icon: <FaMoneyBill1Wave className="w-8 h-8 text-green-600" />,
-      title: "$50 Bank Transfer",
-      description:
-        "The $50 equivalent will be transferred to your bank account.",
-      points: 50000,
-      status: "locked",
-    },
-    {
-      id: "7",
-      icon: <CreditCard className="w-8 h-8 text-indigo-600" />,
-      title: "$100 PayPal Transfer",
-      description: "Receive $100 directly to your PayPal account.",
-      points: 100000,
-      status: "locked",
-    },
-    {
-      id: "8",
-      icon: <Gift className="w-8 h-8 text-pink-600" />,
-      title: "Premium Subscription",
-      description: "Get 3 months of premium features free.",
-      points: 75000,
-      status: "coming-soon",
-    },
-  ];
-
-  // Calculate counts for each filter
-  const filterCounts = {
-    all: rewards.length,
-    unlocked: rewards.filter((r) => r.status === "unlocked").length,
-    locked: rewards.filter((r) => r.status === "locked").length,
-    "coming-soon": rewards.filter((r) => r.status === "coming-soon").length,
-  };
-
-  // Filter rewards based on active filter
-  const filteredRewards =
-    activeFilter === "all"
-      ? rewards
-      : rewards.filter((reward) => reward.status === activeFilter);
-
-  const handleRedeem = (rewardId: string) => {
+  const handleRedeem = useCallback((rewardId: string) => {
     console.log("Redeeming reward:", rewardId);
     // TODO: Implement redemption logic
-  };
+  }, []);
 
   return (
     <div className="space-y-6 md:space-y-8 w-full">

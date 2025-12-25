@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Star } from "lucide-react";
 import type { ReactNode } from "react";
 
@@ -10,7 +11,7 @@ interface RewardCardProps {
   onRedeem?: () => void;
 }
 
-export default function RewardCard({
+function RewardCard({
   icon,
   title,
   description,
@@ -61,3 +62,5 @@ export default function RewardCard({
     </div>
   );
 }
+
+export default memo(RewardCard);

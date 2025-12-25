@@ -1,4 +1,12 @@
-import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+  type ReactNode,
+} from "react";
 import supabase from "../utils/supbaseClient";
 
 interface Transaction {
@@ -34,7 +42,10 @@ export function RewardsProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const [weeklyClaims, setWeeklyClaims] = useState<number[]>([]);
   const [referralCode, setReferralCode] = useState<string | null>(null);
-  const [referralsStats, setReferralsStats] = useState({ count: 0, earnings: 0 });
+  const [referralsStats, setReferralsStats] = useState({
+    count: 0,
+    earnings: 0,
+  });
 
   const getStartOfWeek = () => {
     const date = new Date();
@@ -47,19 +58,37 @@ export function RewardsProvider({ children }: { children: ReactNode }) {
 
   const fetchData = useCallback(async () => {
     try {
-      if (points === 0) setLoading(true); 
-      
-      const { data: { user } } = await supabase.auth.getUser();
+      if (points === 0) setLoading(true);
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
       const startOfWeekISO = getStartOfWeek().toISOString();
 
       // Parallel Fetching for speed
-      const [profileResult, historyResult, weekClaimsResult] = await Promise.all([
-        supabase.from("profiles").select("points_balance, streak_count, last_claimed_at, referral_code, total_referrals, referral_earnings").eq("id", user.id).single(),
-        supabase.from("transactions").select("*").eq("user_id", user.id).order("created_at", { ascending: false }),
-        supabase.from("transactions").select("created_at").eq("user_id", user.id).eq("type", "bonus").gte("created_at", startOfWeekISO)
-      ]);
+      const [profileResult, historyResult, weekClaimsResult] =
+        await Promise.all([
+          supabase
+            .from("profiles")
+            .select(
+              "points_balance, streak_count, last_claimed_at, referral_code, total_referrals, referral_earnings"
+            )
+            .eq("id", user.id)
+            .single(),
+          supabase
+            .from("transactions")
+            .select("*")
+            .eq("user_id", user.id)
+            .order("created_at", { ascending: false }),
+          supabase
+            .from("transactions")
+            .select("created_at")
+            .eq("user_id", user.id)
+            .eq("type", "bonus")
+            .gte("created_at", startOfWeekISO),
+        ]);
 
       if (profileResult.error) throw profileResult.error;
       if (historyResult.error) throw historyResult.error;
@@ -73,34 +102,65 @@ export function RewardsProvider({ children }: { children: ReactNode }) {
         return day === 0 ? 6 : day - 1;
       });
 
-      const lastClaimDate = profile?.last_claimed_at ? new Date(profile.last_claimed_at) : null;
-      const isClaimedToday = lastClaimDate ? lastClaimDate.toDateString() === new Date().toDateString() : false;
+      const lastClaimDate = profile?.last_claimed_at
+        ? new Date(profile.last_claimed_at)
+        : null;
+      const isClaimedToday = lastClaimDate
+        ? lastClaimDate.toDateString() === new Date().toDateString()
+        : false;
 
       setPoints(profile?.points_balance || 0);
       setStreak(profile?.streak_count || 0);
       setReferralCode(profile?.referral_code || null);
-      setReferralsStats({ count: profile?.total_referrals || 0, earnings: profile?.referral_earnings || 0 });
+      setReferralsStats({
+        count: profile?.total_referrals || 0,
+        earnings: profile?.referral_earnings || 0,
+      });
       setTransactions(historyResult.data || []);
       setClaimedToday(isClaimedToday);
       setWeeklyClaims(claimedIndices);
-
     } catch (err) {
       console.error("Error fetching data", err);
-      setError('Error');
+      setError("Error");
     } finally {
       setLoading(false);
     }
-  }, []); 
+  }, []);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
+  // Memoize context value to prevent unnecessary re-renders
+  const contextValue = useMemo(
+    () => ({
+      points,
+      streak,
+      transactions,
+      claimedToday,
+      weeklyClaims,
+      referralCode,
+      referralsStats,
+      loading,
+      error,
+      refresh: fetchData,
+    }),
+    [
+      points,
+      streak,
+      transactions,
+      claimedToday,
+      weeklyClaims,
+      referralCode,
+      referralsStats,
+      loading,
+      error,
+      fetchData,
+    ]
+  );
+
   return (
-    <RewardsContext.Provider value={{ 
-      points, streak, transactions, claimedToday, weeklyClaims, 
-      referralCode, referralsStats, loading, error, refresh: fetchData 
-    }}>
+    <RewardsContext.Provider value={contextValue}>
       {children}
     </RewardsContext.Provider>
   );

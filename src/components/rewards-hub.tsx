@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense, lazy } from "react";
 import { Bell, X } from "lucide-react";
 import { RiMenuFill } from "react-icons/ri";
 import { IoClose } from "react-icons/io5";
 import { useOutletContext } from "react-router-dom";
-import EarnRewardsView from "./earn-points";
-import RedeemRewardsView from "./redeem-rewards";
+
+const EarnRewardsView = lazy(() => import("./earn-points"));
+const RedeemRewardsView = lazy(() => import("./redeem-rewards"));
 
 interface LayoutContext {
   isMobileOpen: boolean;
@@ -20,7 +21,7 @@ export default function Rewards() {
     setMobileOpen: () => {},
   };
 
-  // Close dropdown when clicking outside
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -154,7 +155,22 @@ export default function Rewards() {
             </button>
           </div>
           <div className="mt-6 transition-opacity duration-300">
-            {activeTab === "earn" ? <EarnRewardsView /> : <RedeemRewardsView />}
+            <Suspense
+              fallback={
+                <div className="flex items-center justify-center min-h-100">
+                  <div className="text-center">
+                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mb-4"></div>
+                    <p className="text-gray-600">Loading...</p>
+                  </div>
+                </div>
+              }
+            >
+              {activeTab === "earn" ? (
+                <EarnRewardsView />
+              ) : (
+                <RedeemRewardsView />
+              )}
+            </Suspense>
           </div>
         </div>
       </div>
