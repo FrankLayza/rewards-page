@@ -21,7 +21,6 @@ export default function Rewards() {
     setMobileOpen: () => {},
   };
 
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -44,9 +43,10 @@ export default function Rewards() {
   return (
     <>
       <div>
-        <div className="sticky top-0 bg-white backdrop-blur-sm z-10 pb-4 pt-6 px-6 border-b border-gray-200">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
+        {/* Fixed Header - always stays at top */}
+        <div className="fixed top-0 left-0 md:left-64 right-0 bg-white z-50 pb-4 pt-4 md:pt-6 px-4 md:px-6 border-b border-gray-200 shadow-sm">
+          <div className="flex items-center justify-between mb-3 md:mb-4">
+            <div className="flex items-center gap-2 md:gap-3">
               <button
                 onClick={() => setMobileOpen(!isMobileOpen)}
                 className="md:hidden p-1 hover:bg-gray-100 rounded transition-colors"
@@ -58,15 +58,17 @@ export default function Rewards() {
                   <RiMenuFill className="w-6 h-6 text-black" />
                 )}
               </button>
-              <h1 className="text-2xl font-bold text-gray-900">Rewards Hub</h1>
+              <h1 className="text-xl md:text-2xl font-bold text-gray-900">
+                Rewards Hub
+              </h1>
             </div>
             <div className="relative" ref={notificationRef}>
               <button
                 onClick={() => setShowNotifications(!showNotifications)}
-                className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors cursor-pointer"
+                className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors cursor-pointer"
                 aria-label="View notifications"
               >
-                <Bell className="w-5 h-5 text-gray-700" />
+                <Bell className="w-4 h-4 md:w-5 md:h-5 text-gray-700" />
               </button>
               <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
 
@@ -116,10 +118,14 @@ export default function Rewards() {
               )}
             </div>
           </div>
-          <p className="text-sm text-gray-600 ml-0 md:ml-0">
+          {/* Fixed paragraph below header */}
+          <p className="text-sm md:text-sm text-gray-600">
             Earn points, unlock rewards, and celebrate your progress!
           </p>
         </div>
+
+        {/* Spacer to prevent content from going under fixed header */}
+        <div className="h-24 md:h-28"></div>
 
         <div className="p-4 md:p-8 overflow-x-hidden">
           <div className="flex">
