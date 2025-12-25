@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useState, } from "react";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { signUpUser } from "../utils/auth";
 
@@ -11,6 +11,8 @@ export default function SignUp() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [searchParams] = useSearchParams();
+  const referralCode = searchParams.get("ref");
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -19,7 +21,12 @@ export default function SignUp() {
     setLoading(true);
 
     try {
-      const { error } = await signUpUser(email, password, fullName);
+      const { error } = await signUpUser(
+        email,
+        password,
+        fullName,
+        referralCode || undefined
+      );
       if (error) {
         setError(error.message);
       } else {
@@ -42,6 +49,13 @@ export default function SignUp() {
           Flowva Hub
         </h1>
         <p className="text-center text-gray-600 mb-8">Create your account</p>
+        {referralCode && (
+          <div className="mb-4 p-3 rounded-lg bg-purple-50 border border-purple-200">
+            <p className="text-sm text-purple-700 text-center">
+              🎉 You were referred! You'll earn bonus points when you sign up.
+            </p>
+          </div>
+        )}
 
         {success ? (
           <div className="text-center py-8">
@@ -52,7 +66,10 @@ export default function SignUp() {
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="fullName"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Full Name
               </label>
               <input
@@ -67,7 +84,10 @@ export default function SignUp() {
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Email
               </label>
               <input
@@ -82,7 +102,10 @@ export default function SignUp() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Password
               </label>
               <div className="relative">
@@ -102,14 +125,12 @@ export default function SignUp() {
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
-                  {showPassword ? (
-                    <EyeOff size={20} />
-                  ) : (
-                    <Eye size={20} />
-                  )}
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
-              <p className="mt-1 text-xs text-gray-500">Must be at least 6 characters</p>
+              <p className="mt-1 text-xs text-gray-500">
+                Must be at least 6 characters
+              </p>
             </div>
 
             {error && (
@@ -131,7 +152,10 @@ export default function SignUp() {
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
             Already have an account?{" "}
-            <Link to="/login" className="text-purple-600 hover:text-purple-700 font-medium">
+            <Link
+              to="/login"
+              className="text-purple-600 hover:text-purple-700 font-medium"
+            >
               Sign in
             </Link>
           </p>
@@ -140,4 +164,3 @@ export default function SignUp() {
     </div>
   );
 }
-
