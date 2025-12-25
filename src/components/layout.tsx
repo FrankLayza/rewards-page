@@ -1,5 +1,5 @@
-import { Outlet } from 'react-router-dom';
-import Sidebar from './sidebar';
+import { Outlet } from "react-router-dom";
+import Sidebar from "./sidebar";
 
 export default function Layout() {
   return (
@@ -9,10 +9,10 @@ export default function Layout() {
 
       {/* Main Content Area */}
       {/* ml-64 pushes content to the right to account for the fixed sidebar */}
-      <main className="flex-1 ml-64 p-8">
+      <main className="flex-1 ml-64">
         <div className="max-w-6xl mx-auto">
           {/* <Outlet /> renders the child route (the Rewards Page) */}
-          <Outlet /> 
+          <Outlet />
         </div>
       </main>
     </div>

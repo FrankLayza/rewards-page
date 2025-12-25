@@ -11,7 +11,9 @@ import {
   Linkedin,
   Gift,
   UserPlus2,
+  Copy,
 } from "lucide-react";
+import { useState } from "react";
 
 export default function EarnRewardsView() {
   // Mock data for UI development (We will replace this with Supabase data later)
@@ -20,6 +22,19 @@ export default function EarnRewardsView() {
     goal: 5000,
     streak: 1,
     claimedToday: true,
+  };
+
+  const [referralLink] = useState("https://flowvahub.com/ref/abc123");
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(referralLink);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy:", err);
+    }
   };
 
   const weekDays = ["M", "T", "W", "T", "F", "S", "S"];
@@ -237,7 +252,7 @@ export default function EarnRewardsView() {
           <h2 className="text-xl font-bold text-gray-900">Refer & Earn</h2>
         </div>
         <div className="bg-white">
-          <div className="flex items-center gap-3 bg-[#eef2ff] p-4">
+          <div className="flex items-center gap-3 bg-[#eef2ff] p-4 rounded-t-2xl">
             <Users className="text-purple-500" />
             <div className="">
               <h2 className="font-semibold">Share Your Link</h2>
@@ -249,11 +264,11 @@ export default function EarnRewardsView() {
           <div className="p-4">
             <div className="flex justify-evenly items-center">
               <div className="text-center">
-                <p className="font-semibold text-purple-400">0</p>
+                <p className="font-semibold text-purple-400 text-3xl">0</p>
                 <p className="text-sm">Referrals</p>
               </div>
               <div className="text-center">
-                <p className="font-semibold text-purple-400">0</p>
+                <p className="font-semibold text-purple-400 text-3xl">0</p>
                 <p className="text-sm">Points Earned</p>
               </div>
             </div>
@@ -262,10 +277,25 @@ export default function EarnRewardsView() {
               <p className="text-gray-600 text-sm">
                 Your personal referral link:
               </p>
-              <input
-                type="text"
-                className="border border-gray-300 w-full bg-white rounded-md mt-3 p-1"
-              />
+              <div className="relative mt-3">
+                <input
+                  type="text"
+                  value={referralLink}
+                  readOnly
+                  className="border border-gray-300 w-full bg-white rounded-md p-2 pr-10"
+                />
+                <button
+                  onClick={handleCopy}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 hover:bg-gray-100 rounded transition-colors"
+                  title={copied ? "Copied!" : "Copy link"}
+                >
+                  <Copy
+                    className={`w-4 h-4 ${
+                      copied ? "text-green-600" : "text-gray-600"
+                    }`}
+                  />
+                </button>
+              </div>
             </div>
 
             <div className="flex justify-center items-center">
